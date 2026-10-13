@@ -36,7 +36,7 @@ Storia PERSONALE di Nicccolò Venerandi e consigli per chi volesse provarci
 
 ---
 
-Secondo tentativo: sono diventato adolescente
+Secondo tentativo: ho comprato un Mac
 ![](img/mondo/tux-linux-mascot.png)
 
 ---
