@@ -92,7 +92,7 @@
   // --- icone del task manager nel pannello ---
   const TASKS = [
     'img/pannelo/dolphin.svg',
-    'img/pannello/konsle.svg',
+    'img/pannello/konsole.svg',
     'img/pannello/browser.png',
   ];
   const overlay = document.createElement('div');
