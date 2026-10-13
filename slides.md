@@ -125,7 +125,7 @@ Passaggi necesari:
 - Account KDE
 - Clonare i repo
 - Buildare tutto
-Cambiare il codice
+* Cambiare il codice
 - Git push
 --
 - Fatto!
