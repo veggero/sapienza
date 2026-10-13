@@ -1,0 +1,84 @@
+/* Meccanica comune a tutti i temi: palco, comparse, panoramica, stampa. L'aspetto sta in themes/<nome>/theme.css */
+
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body { -webkit-font-smoothing: antialiased; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+
+#deck {
+  position: absolute; left: 50%; top: 50%;
+  width: 1920px; height: 1080px;
+  transform: translate(-50%, -50%) scale(var(--scale, 1));
+}
+.slide {
+  position: absolute; inset: 0; box-sizing: border-box; overflow: hidden;
+  display: flex; flex-direction: column;
+  visibility: hidden;
+}
+.slide.active { visibility: visible; }
+.notes { display: none; }
+.deco { position: absolute; inset: 0; pointer-events: none; }
+
+/* il JS cerca il testo più grande che entra in .body */
+.body { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; overflow: hidden; position: relative; }
+p, h1, h2, h3, ul, figure { margin: 0; }
+ul { list-style: none; padding: 0; }
+
+[data-step] { transition: opacity .28s ease; }
+[data-step].hidden { opacity: 0; visibility: hidden; }
+
+#progress { position: fixed; left: 0; right: 0; bottom: 0; height: 5px; }
+#progress div { height: 100%; width: 0; transition: width .3s ease; }
+
+body.blank #deck, body.blank #progress { opacity: 0; }
+body.blank { background: #000 !important; }
+
+body.ov { overflow: auto; background: #777 !important; }
+body.ov #deck {
+  position: static; transform: none; width: auto; height: auto;
+  display: grid; grid-template-columns: repeat(auto-fill, 384px); gap: 28px; padding: 40px; justify-content: center;
+}
+body.ov .slide { position: relative; inset: auto; visibility: visible; zoom: .2; width: 1920px; height: 1080px; cursor: pointer; }
+body.ov .slide.active { outline: 30px solid #fff; }
+body.ov [data-step].hidden { opacity: 1; visibility: visible; }
+body.ov #progress { display: none; }
+
+@media print {
+  @page { size: 1920px 1080px; margin: 0; }
+  html, body { height: auto; overflow: visible; }
+  #deck { position: static; transform: none !important; width: 1920px; height: auto; }
+  .slide { position: relative; visibility: visible; width: 1920px; height: 1080px; break-after: page; }
+  [data-step].hidden { opacity: 1; visibility: visible; }
+  #progress { display: none; }
+}
+
+/* segnaposto [DA FARE ...] */
+.todo { font-family: monospace; font-size: .5em; font-weight: 700; color: #c00; background: #ffe3e3; outline: 4px dashed #e33; outline-offset: 4px; padding: 0 .3em; }
+
+/* immagini: .side (accanto al testo), .stack (sotto), .img-only (da sole). --bh = altezza del corpo, la mette il JS */
+.has-img .inner { display: flex; gap: 64px; align-items: center; }
+.has-img .txt { flex: 1 1 0; min-width: 0; }
+.txt > * + * { margin-top: .5em; }
+.has-img .inner > .media { margin-top: 0; }
+.media { display: flex; gap: 28px; justify-content: center; align-items: center; flex-wrap: wrap; }
+figure { display: flex; flex-direction: column; align-items: center; }
+figure img { display: block; max-width: 100%; object-fit: contain; }
+figcaption { margin-top: 10px; font-size: 20px; line-height: 1.3; opacity: .7; text-align: center; max-width: 100%; }
+.side .media { flex: 0 0 auto; max-width: 56%; flex-direction: column; flex-wrap: nowrap; }
+.side .media img { max-height: calc(var(--bh, 700px) - 70px); }
+.side .media[data-count="2"] img { max-height: calc(var(--bh, 700px) / 2 - 90px); }
+.stack .inner { flex-direction: column; align-items: stretch; gap: 30px; }
+.stack .txt { flex: none; }
+.stack .media img { max-height: calc(var(--bh, 700px) * .6); }
+.stack .media[data-count="3"] figure, .stack .media[data-count="4"] figure { max-width: calc((100% - 84px) / 4); }
+.img-only .inner { width: 100%; }
+.img-only .media img { max-height: calc(var(--bh, 700px) - 60px); }
+.img-only .media[data-count="2"] figure { max-width: calc(50% - 14px); }
+.img-only .media[data-count="3"] figure { max-width: calc(33.3% - 19px); }
+.img-only .media[data-count="4"] figure { max-width: calc(50% - 14px); }
+.img-only .media[data-count="4"] img { max-height: calc(var(--bh, 700px) / 2 - 70px); }
+.img-only h3 + .media { margin-top: 24px !important; }
+
+/* modalità live (classifica e notifiche): stesso palco scalato della presentazione */
+#overlay { position: fixed; left: 50%; top: 50%; width: 1920px; height: 1080px; transform: translate(-50%, -50%) scale(var(--scale, 1)); pointer-events: none; z-index: 10; }
+#overlay .notif { pointer-events: auto; }
+body.ov #overlay, body.blank #overlay { display: none; }
+@media print { #overlay { display: none; } }
