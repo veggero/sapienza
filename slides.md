@@ -486,8 +486,8 @@ Se non volete programmare:
 {.side}
 community.kkde.org/Get_Involved
 nicco.love
-youttube.com/@niccoloveslinux
-fossstodon.org/@niccolove
+youtube.com/@niccoloveslinux
+fosstodon.org/@niccolove
 Grazie!
 ![Da dove iniziare](img/oggi/qr-get-involved.png)
 ![I miei contatti](img/oggi/qr-sito-nicco-love.png)
