@@ -484,10 +484,10 @@ Se non volete programmare:
 
 <!-- NUOVO -->
 {.side}
-community.kkde.org/Get_Involved
+community.kde.org/Get_Involved
 nicco.love
 youttube.com/@niccoloveslinux
 fossstodon.org/@niccolove
-Grazie!
+Grazie mille a tutti!
 ![Da dove iniziare](img/oggi/qr-get-involved.png)
 ![I miei contatti](img/oggi/qr-sito-nicco-love.png)
