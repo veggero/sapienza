@@ -1,0 +1,67 @@
+# Ogni pull request viene mandata a Claude (sul server del talk): se corregge gli errori, la unisce subito.
+name: Review di Claude
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Chiedi a Claude e unisci
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          SECRET: ${{ secrets.TALK_SECRET }}
+          SERVER: https://95.217.131.117/talk/api
+        run: |
+          post() { curl -fsS -m "$2" --retry 2 --retry-all-errors -X POST -H 'Content-Type: application/json' -H "X-Talk-Secret: $SECRET" --data @req.json "$SERVER/$1"; }
+          gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '[.[] | {filename, status, patch}]' | jq -s 'add' > files.json
+          gh api "repos/$REPO/pulls/$PR/commits" --paginate --jq '[.[].commit.message]' | jq -s 'add' > commits.json
+          gh api "repos/$REPO/pulls/$PR" --jq '.body // ""' > body.txt
+          gh api "repos/$REPO/pulls/$PR" --jq '.title // ""' > title.txt
+          jq -n --arg user "$AUTHOR" --argjson pr "$PR" --arg sha "$SHA" --slurpfile files files.json \
+            --slurpfile commits commits.json --rawfile body body.txt --rawfile title title.txt \
+            '{user: $user, pr: $pr, sha: $sha, files: $files[0], commits: $commits[0], body: $body, title: $title}' > req.json
+          post review 1600 > verdict.json || echo '{"merge": false, "retry": true, "message": "🤖 Il server del talk non risponde: chiudi e riapri la PR per riprovare."}' > verdict.json
+          msg=$(jq -r .message verdict.json)
+          if [ "$(jq -r .merge verdict.json)" = true ]; then
+            note=""
+            if [ "$(jq -r '.apply // false' verdict.json)" != true ]; then
+              if gh pr merge "$PR" --repo "$REPO" --merge; then
+                gh pr comment "$PR" --repo "$REPO" --body "$msg"
+                exit 0
+              fi
+              note=" (C'era un conflitto con un'altra correzione: l'ho applicata io su main.)"
+            fi
+            # PR giusta solo in parte, o conflitto con una riga vicina: applichiamo su main solo le righe approvate
+            for try in 1 2 3; do
+              post apply 60 > apply.json || { sleep 3; continue; }
+              ok=true
+              for i in $(seq 0 $(( $(jq '.files | length' apply.json) - 1 ))); do
+                path=$(jq -r ".files[$i].path" apply.json)
+                jq -j ".files[$i].content" apply.json > content.b64
+                fsha=$(gh api "repos/$REPO/contents/$path" --jq .sha)
+                gh api -X PUT "repos/$REPO/contents/$path" -f message="Correzione dalla pull request #$PR di @$AUTHOR" \
+                  -F content=@content.b64 -f sha="$fsha" > /dev/null || ok=false
+              done
+              $ok && break
+              sleep 3
+            done
+            gh pr comment "$PR" --repo "$REPO" --body "$msg$note"
+            gh pr close "$PR" --repo "$REPO"
+          elif [ "$(jq -r '.retry // false' verdict.json)" = true ]; then
+            gh pr comment "$PR" --repo "$REPO" --body "$msg"
+          else
+            gh pr comment "$PR" --repo "$REPO" --body "$msg"
+            gh pr close "$PR" --repo "$REPO"
+          fi
