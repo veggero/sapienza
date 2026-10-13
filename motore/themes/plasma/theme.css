@@ -74,7 +74,7 @@ body { background: #0d3d7a; }
 footer .talk, footer .sec {
   position: absolute; top: 40px; height: 54px; left: 300px; right: 300px;
   line-height: 54px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  font-size: 25px; font-weight: 500; color: var(--ink); font-family: "Comic Sans MS", "Comic Neue", cursive;
+  font-size: 25px; font-weight: 500; color: var(--ink); font-family: var(--sans);
 }
 footer .sec { background: var(--tbar); }
 footer .sec:empty { display: none; }
