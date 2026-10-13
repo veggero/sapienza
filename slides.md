@@ -25,7 +25,7 @@
 <!-- theme: plasma -->
 
 # Come l'Open Source ti campia la vita
-Storia PERSONALE di Nicccolò Venerandi e consigli per chi volesse provarci
+Storia PERSONALE di Niccolò Venerandi e consigli per chi volesse provarci
 
 
 ---
