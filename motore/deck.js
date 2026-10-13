@@ -93,7 +93,7 @@
   const TASKS = [
     'img/pannelo/dolphin.svg',
     'img/pannello/konsle.svg',
-    'img/pannello/browser.png',
+    'img/pannello/browser.svg',
   ];
   const overlay = document.createElement('div');
   overlay.id = 'overlay';
