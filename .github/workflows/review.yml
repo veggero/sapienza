@@ -1,0 +1,44 @@
+# Ogni pull request viene mandata a Claude (sul server del talk): se corregge gli errori, la unisce subito.
+name: Review di Claude
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Chiedi a Claude e unisci
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          SECRET: ${{ secrets.TALK_SECRET }}
+        run: |
+          gh api "repos/$REPO/pulls/$PR/files" --paginate --jq '[.[] | {filename, status, patch}]' | jq -s 'add' > files.json
+          gh api "repos/$REPO/pulls/$PR/commits" --paginate --jq '[.[].commit.message]' | jq -s 'add' > commits.json
+          gh api "repos/$REPO/pulls/$PR" --jq '.body // ""' > body.txt
+          jq -n --arg user "$AUTHOR" --argjson pr "$PR" --arg sha "$SHA" --slurpfile files files.json \
+            --slurpfile commits commits.json --rawfile body body.txt \
+            '{user: $user, pr: $pr, sha: $sha, files: $files[0], commits: $commits[0], body: $body}' > req.json
+          curl -fsS -m 150 -X POST -H 'Content-Type: application/json' -H "X-Talk-Secret: $SECRET" --data @req.json \
+            https://95.217.131.117/talk/api/review > verdict.json || echo '{"merge": false, "message": "🤖 Il server del talk non risponde, riprova tra poco."}' > verdict.json
+          msg=$(jq -r .message verdict.json)
+          if [ "$(jq -r .merge verdict.json)" = true ]; then
+            if gh pr merge "$PR" --repo "$REPO" --merge; then
+              gh pr comment "$PR" --repo "$REPO" --body "$msg"
+            else
+              gh pr comment "$PR" --repo "$REPO" --body "🤖 Correzione giusta, ma non riesco a unirla (conflitto?). Aggiorna la tua PR."
+            fi
+          else
+            gh pr comment "$PR" --repo "$REPO" --body "$msg"
+            gh pr close "$PR" --repo "$REPO"
+          fi
