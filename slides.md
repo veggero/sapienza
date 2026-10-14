@@ -124,8 +124,8 @@ Ho passato due giorni di ANSIA che stessi sbagliando qualcosa
 Passaggi necessari:
 - Account KDE
 - Clonare i repo
+- Cambiare il codice
 - Buildare tutto
-Cambiare il codice
 - Git push
 --
 - Fatto!
@@ -371,7 +371,7 @@ Gli ho chiesto cosa volessero
 Mi hanno detto "farmi un colloquio di lavoro". Avanzavano dei soldi di Valve
 --
 Un mese dopo ho firmato il contratto. Ha cambiato la mia vita
-![Akademy 2023, Salonicco: «Plasma 6 is coming»](img/storia/akademy2023-thessaloniki-niccolo-plasma6-talk.jpg)
+![Akademy 2023, Salonicco: «Plasma 6 is coming»](img/citta/new-york.jpg)
 
 ---
 
