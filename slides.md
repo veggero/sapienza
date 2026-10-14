@@ -125,7 +125,7 @@ Passaggi necessari:
 - Account KDE
 - Clonare i repo
 - Buildare tutto
-Cambiare il codice
+- Cambiare il codice
 - Git push
 --
 - Fatto!
@@ -304,7 +304,7 @@ Infatti in KDE ci sono interi team che non programmano:
 Un giorno le chat di KDE dicono che sta per succedere qualcosa di grosso
 Mi mandano un link a una diretta di Valve. Mi metto le cuffie mentre vado in università (sono in ritardo)
 --
-Annunciano lo SteamDeck
+Annunciano lo Steam Deck
 ![This Week in KDE, 16 luglio 2021](img/mondo/nate-graham-blog-kde-powered-steam-deck-revealed-2021-07-16.png)
 Note: annunciato il 15 luglio 2021 (sito + trailer); non ho trovato conferma che fosse una diretta: verifica.
 
@@ -397,7 +397,7 @@ COME FARSI ASSUMERE: essere in cima a quella leaderboard per qualche mese
 ---
 
 ## COME ANDARE IN BURNOUT
-Un anno fa stavo passeggiando sotto casa mia, camminando avanti indietro
+Un anno fa stavo passeggiando sotto casa mia, camminando avanti e indietro
 --
 Dovevo lavorare. (Non stavo lavorando). ((Non riuscivo proprio a lavorare)).
 ![](img/meme/meme-burnout-this-is-fine.jpg)
